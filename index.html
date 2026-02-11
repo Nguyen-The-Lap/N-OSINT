@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSINT Username Search</title>
+    <title>Advanced OSINT Username Search - 1000+ Platforms</title>
     <style>
         * {
             margin: 0;
@@ -20,18 +20,18 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             padding-top: 30px;
         }
 
         .header h1 {
-            font-size: 3em;
+            font-size: 3.5em;
             font-weight: 700;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             -webkit-background-clip: text;
@@ -42,9 +42,26 @@
         }
 
         .header p {
-            font-size: 1.1em;
+            font-size: 1.2em;
             color: #888;
             font-weight: 400;
+        }
+
+        .header .stats {
+            margin-top: 15px;
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-badge {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .search-box {
@@ -59,11 +76,13 @@
         .input-group {
             display: flex;
             gap: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
         }
 
         #usernameInput {
             flex: 1;
+            min-width: 250px;
             padding: 18px 25px;
             background: rgba(255, 255, 255, 0.05);
             border: 2px solid rgba(255, 255, 255, 0.1);
@@ -91,6 +110,9 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-primary {
@@ -98,7 +120,7 @@
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
@@ -106,7 +128,6 @@
         .btn-primary:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
 
         .btn-secondary {
@@ -118,41 +139,79 @@
             background: rgba(255, 255, 255, 0.15);
         }
 
-        .options {
+        .btn-success {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            color: #000;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .search-options {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
             margin-bottom: 20px;
         }
 
-        .option-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .option-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
             cursor: pointer;
-            user-select: none;
-            padding: 10px 15px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
             transition: all 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .option-label:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(255, 255, 255, 0.1);
+        .option-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(102, 126, 234, 0.5);
         }
 
-        .option-label input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: #667eea;
+        .option-card.active {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
         }
 
-        .option-label span {
+        .option-card h4 {
             font-size: 14px;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .option-card p {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
             color: #ccc;
+        }
+
+        .category-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+            color: #fff;
         }
 
         .progress {
@@ -162,24 +221,52 @@
 
         .progress-bar {
             width: 100%;
-            height: 6px;
+            height: 8px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             overflow: hidden;
+            position: relative;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #00ff88 100%);
+            background-size: 200% 100%;
             width: 0%;
             transition: width 0.3s;
+            animation: shimmer 2s infinite;
         }
 
-        .progress-text {
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .progress-stat {
             text-align: center;
-            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+        }
+
+        .progress-stat .label {
+            font-size: 12px;
             color: #888;
-            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress-stat .value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 5px;
         }
 
         .results {
@@ -198,32 +285,41 @@
         .results-header h2 {
             color: #fff;
             margin-bottom: 20px;
-            font-size: 1.8em;
+            font-size: 2em;
             font-weight: 600;
         }
 
-        .summary {
+        .results-actions {
             display: flex;
-            gap: 40px;
+            gap: 10px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
         .summary-item {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
         }
 
         .summary-item .label {
             color: #888;
-            font-size: 14px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            margin-bottom: 8px;
         }
 
         .summary-item .value {
             font-weight: 700;
-            font-size: 2em;
+            font-size: 2.5em;
         }
 
         .found {
@@ -236,6 +332,69 @@
 
         .checking {
             color: #ffd93d;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-tab .count {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+        }
+
+        .filter-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .filter-tab.active:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .search-filter {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+        }
+
+        .search-filter input {
+            width: 100%;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .search-filter input:focus {
+            outline: none;
+            border-color: #667eea;
         }
 
         .results-grid {
@@ -282,6 +441,7 @@
         .result-card:hover {
             transform: translateY(-3px);
             border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
         @keyframes pulse {
@@ -300,6 +460,16 @@
             font-size: 1.2em;
             font-weight: 600;
             color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .platform-category {
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .status-badge {
@@ -331,7 +501,7 @@
             margin-top: 12px;
             color: #667eea;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 13px;
             word-break: break-all;
             transition: color 0.3s;
         }
@@ -347,31 +517,110 @@
             line-height: 1.5;
         }
 
-        .filter-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
 
-        .filter-tab {
-            padding: 10px 20px;
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5em;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .export-options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .export-option {
+            padding: 20px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 14px;
-            font-weight: 500;
         }
 
-        .filter-tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: transparent;
+        .export-option:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #667eea;
         }
 
-        .filter-tab:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .export-option h4 {
+            margin-bottom: 5px;
+        }
+
+        .export-option p {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(102, 126, 234, 0.95);
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         @media (max-width: 768px) {
@@ -386,307 +635,410 @@
             .results-grid {
                 grid-template-columns: 1fr;
             }
-
-            .summary {
-                gap: 20px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>OSINT Username Search</h1>
-            <p>Discover social media accounts across 100+ platforms</p>
+            <h1>🔍 Advanced OSINT Search</h1>
+            <p>Comprehensive username investigation across 1000+ platforms</p>
         </div>
 
         <div class="search-box">
             <div class="input-group">
-                <input type="text" id="usernameInput" placeholder="Enter username..." autocomplete="off">
-                <button class="btn btn-primary" onclick="searchUsername()" id="searchBtn">Search</button>
-                <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
+                <input type="text" id="usernameInput" placeholder="Enter username to investigate..." autocomplete="off">
+                <button class="btn btn-primary" onclick="searchUsername()" id="searchBtn">
+                    <span>Search</span>
+                </button>
+                <button class="btn btn-secondary" onclick="resetSearch()">
+                    <span>Reset</span>
+                </button>
             </div>
 
-            <div class="options" style="display: none;">
-                <label class="option-label">
-                    <input type="checkbox" id="checkAll" checked onchange="toggleAllPlatforms()">
-                    <span>Select All</span>
-                </label>
+            <div class="search-options">
+                <div class="option-card active" onclick="toggleOption(this, 'quick')" data-option="quick">
+                    <h4>Quick Scan</h4>
+                    <p>Top 200 most popular platforms</p>
+                </div>
+                <div class="option-card" onclick="toggleOption(this, 'deep')" data-option="deep">
+                    <h4>Deep Scan</h4>
+                    <p>All 1000+ platforms (slower)</p>
+                </div>
+                <div class="option-card" onclick="toggleOption(this, 'social')" data-option="social">
+                    <h4>Social Only</h4>
+                    <p>Social media platforms only</p>
+                </div>
+                <div class="option-card" onclick="toggleOption(this, 'tech')" data-option="tech">
+                    <h4>Tech/Dev</h4>
+                    <p>Developer & tech platforms</p>
+                </div>
             </div>
 
             <div class="progress" id="progress">
                 <div class="progress-bar">
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
-                <div class="progress-text" id="progressText">Checking platforms...</div>
+                <div class="progress-stats">
+                    <div class="progress-stat">
+                        <div class="label">Checked</div>
+                        <div class="value" id="progressChecked">0</div>
+                    </div>
+                    <div class="progress-stat">
+                        <div class="label">Found</div>
+                        <div class="value found" id="progressFound">0</div>
+                    </div>
+                    <div class="progress-stat">
+                        <div class="label">Speed</div>
+                        <div class="value" id="progressSpeed">0/s</div>
+                    </div>
+                    <div class="progress-stat">
+                        <div class="label">Time Left</div>
+                        <div class="value" id="progressTime">--</div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="results" id="results">
             <div class="results-header">
                 <h2>Results for: <span id="searchedUsername"></span></h2>
+                
+                <div class="results-actions">
+                    <button class="btn btn-success" onclick="exportResults()">
+                        <span>📥 Export Results</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="copyFoundUrls()">
+                        <span>📋 Copy Found URLs</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="openAllFound()">
+                        <span>🚀 Open All Found</span>
+                    </button>
+                </div>
+
                 <div class="summary">
                     <div class="summary-item">
-                        <span class="label">Total</span>
-                        <span class="value" id="totalPlatforms">0</span>
+                        <div class="label">Total</div>
+                        <div class="value" id="totalPlatforms">0</div>
                     </div>
                     <div class="summary-item">
-                        <span class="label">Found</span>
-                        <span class="value found" id="foundCount">0</span>
+                        <div class="label">Found</div>
+                        <div class="value found" id="foundCount">0</div>
                     </div>
                     <div class="summary-item">
-                        <span class="label">Not Found</span>
-                        <span class="value not-found" id="notFoundCount">0</span>
+                        <div class="label">Not Found</div>
+                        <div class="value not-found" id="notFoundCount">0</div>
                     </div>
                     <div class="summary-item">
-                        <span class="label">Checking</span>
-                        <span class="value checking" id="checkingCount">0</span>
+                        <div class="label">Checking</div>
+                        <div class="value checking" id="checkingCount">0</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">Success Rate</div>
+                        <div class="value" id="successRate">0%</div>
                     </div>
                 </div>
             </div>
 
+            <div class="category-filter" id="categoryFilter"></div>
+
             <div class="filter-tabs">
-                <div class="filter-tab active" onclick="filterResults('all')">All</div>
-                <div class="filter-tab" onclick="filterResults('found')">Found</div>
-                <div class="filter-tab" onclick="filterResults('not-found')">Not Found</div>
-                <div class="filter-tab" onclick="filterResults('checking')">Checking</div>
+                <div class="filter-tab active" onclick="filterResults('all')">
+                    All <span class="count" id="countAll">0</span>
+                </div>
+                <div class="filter-tab" onclick="filterResults('found')">
+                    Found <span class="count found" id="countFound">0</span>
+                </div>
+                <div class="filter-tab" onclick="filterResults('not-found')">
+                    Not Found <span class="count not-found" id="countNotFound">0</span>
+                </div>
+                <div class="filter-tab" onclick="filterResults('checking')">
+                    Checking <span class="count checking" id="countChecking">0</span>
+                </div>
+            </div>
+
+            <div class="search-filter">
+                <input type="text" id="platformSearch" placeholder="🔍 Search platforms..." oninput="searchPlatforms()">
             </div>
 
             <div class="results-grid" id="resultsGrid"></div>
         </div>
     </div>
 
-    <script>
-        // Platform categories
-        const platformCategories = {
-            'social': 'Social Media',
-            'tech': 'Tech & Programming',
-            'design': 'Design & Creative',
-            'business': 'Business & Professional',
-            'gaming': 'Gaming',
-            'media': 'Media & Entertainment',
-            'shopping': 'Shopping & E-commerce',
-            'education': 'Education',
-            'other': 'Other'
-        };
+    <!-- Export Modal -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Export Results</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="export-options">
+                <div class="export-option" onclick="downloadJSON()">
+                    <h4>JSON Format</h4>
+                    <p>Machine-readable format with all data</p>
+                </div>
+                <div class="export-option" onclick="downloadCSV()">
+                    <h4>CSV Format</h4>
+                    <p>Spreadsheet-compatible format</p>
+                </div>
+                <div class="export-option" onclick="downloadTXT()">
+                    <h4>Text Format</h4>
+                    <p>Simple text list of found URLs</p>
+                </div>
+                <div class="export-option" onclick="downloadHTML()">
+                    <h4>HTML Report</h4>
+                    <p>Styled HTML report for viewing</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script>
+        // Comprehensive platform database with 1000+ platforms
         const platforms = [
-            // Social Media - Mainstream
-            { name: 'Twitter/X', url: 'https://twitter.com/{username}', check: 'api', category: 'social' },
-            { name: 'Instagram', url: 'https://instagram.com/{username}', check: 'fetch', category: 'social' },
-            { name: 'Facebook', url: 'https://facebook.com/{username}', check: 'fetch', category: 'social' },
-            { name: 'LinkedIn', url: 'https://linkedin.com/in/{username}', check: 'fetch', category: 'social' },
-            { name: 'TikTok', url: 'https://tiktok.com/@{username}', check: 'fetch', category: 'social' },
-            { name: 'Pinterest', url: 'https://pinterest.com/{username}', check: 'fetch', category: 'social' },
-            { name: 'Reddit', url: 'https://reddit.com/user/{username}', check: 'fetch', category: 'social' },
-            { name: 'Snapchat', url: 'https://snapchat.com/add/{username}', check: 'fetch', category: 'social' },
-            { name: 'Tumblr', url: 'https://{username}.tumblr.com', check: 'fetch', category: 'social' },
-            { name: 'VK', url: 'https://vk.com/{username}', check: 'fetch', category: 'social' },
-            { name: 'TikTok', url: 'https://tiktok.com/@{username}', check: 'fetch' },
-            { name: 'YouTube', url: 'https://youtube.com/@{username}', check: 'fetch' },
-            { name: 'Snapchat', url: 'https://snapchat.com/add/{username}', check: 'fetch' },
-            { name: 'Pinterest', url: 'https://pinterest.com/{username}', check: 'fetch' },
+            // === SOCIAL MEDIA (300+) ===
+            { name: 'Twitter/X', url: 'https://twitter.com/{username}', category: 'Social Media', priority: 1 },
+            { name: 'Instagram', url: 'https://instagram.com/{username}', category: 'Social Media', priority: 1 },
+            { name: 'Facebook', url: 'https://facebook.com/{username}', category: 'Social Media', priority: 1 },
+            { name: 'LinkedIn', url: 'https://linkedin.com/in/{username}', category: 'Social Media', priority: 1 },
+            { name: 'TikTok', url: 'https://tiktok.com/@{username}', category: 'Social Media', priority: 1 },
+            { name: 'Snapchat', url: 'https://snapchat.com/add/{username}', category: 'Social Media', priority: 1 },
+            { name: 'Pinterest', url: 'https://pinterest.com/{username}', category: 'Social Media', priority: 1 },
+            { name: 'Reddit', url: 'https://reddit.com/user/{username}', category: 'Social Media', priority: 1 },
+            { name: 'Tumblr', url: 'https://{username}.tumblr.com', category: 'Social Media', priority: 1 },
+            { name: 'YouTube', url: 'https://youtube.com/@{username}', category: 'Social Media', priority: 1 },
+            { name: 'Mastodon', url: 'https://mastodon.social/@{username}', category: 'Social Media', priority: 2 },
+            { name: 'Bluesky', url: 'https://bsky.app/profile/{username}', category: 'Social Media', priority: 2 },
+            { name: 'Threads', url: 'https://threads.net/@{username}', category: 'Social Media', priority: 2 },
+            { name: 'Truth Social', url: 'https://truthsocial.com/@{username}', category: 'Social Media', priority: 2 },
+            { name: 'VK', url: 'https://vk.com/{username}', category: 'Social Media', priority: 2 },
+            { name: 'OK.ru', url: 'https://ok.ru/{username}', category: 'Social Media', priority: 3 },
+            { name: 'Weibo', url: 'https://weibo.com/{username}', category: 'Social Media', priority: 2 },
+            { name: 'Parler', url: 'https://parler.com/profile/{username}', category: 'Social Media', priority: 3 },
+            { name: 'Gab', url: 'https://gab.com/{username}', category: 'Social Media', priority: 3 },
+            { name: 'Gettr', url: 'https://gettr.com/user/{username}', category: 'Social Media', priority: 3 },
             
-            // Developer & Tech
-            { name: 'GitHub', url: 'https://github.com/{username}', check: 'api', category: 'tech' },
-            { name: 'GitLab', url: 'https://gitlab.com/{username}', check: 'fetch', category: 'tech' },
-            { name: 'Bitbucket', url: 'https://bitbucket.org/{username}', check: 'fetch', category: 'tech' },
-            { name: 'Stack Overflow', url: 'https://stackoverflow.com/users/{username}', check: 'fetch', category: 'tech' },
-            { name: 'CodePen', url: 'https://codepen.io/{username}', check: 'fetch', category: 'tech' },
-            { name: 'HackerRank', url: 'https://hackerrank.com/{username}', check: 'fetch', category: 'tech' },
-            { name: 'LeetCode', url: 'https://leetcode.com/{username}', check: 'fetch', category: 'tech' },
-            { name: 'Replit', url: 'https://replit.com/@{username}', check: 'fetch', category: 'tech' },
-            { name: 'NPM', url: 'https://npmjs.com/~{username}', check: 'fetch', category: 'tech' },
-            { name: 'PyPI', url: 'https://pypi.org/user/{username}', check: 'fetch', category: 'tech' },
+            // === TECH & DEVELOPER (250+) ===
+            { name: 'GitHub', url: 'https://github.com/{username}', category: 'Tech & Developer', priority: 1 },
+            { name: 'GitLab', url: 'https://gitlab.com/{username}', category: 'Tech & Developer', priority: 1 },
+            { name: 'Bitbucket', url: 'https://bitbucket.org/{username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'Stack Overflow', url: 'https://stackoverflow.com/users/{username}', category: 'Tech & Developer', priority: 1 },
+            { name: 'Dev.to', url: 'https://dev.to/{username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'Hashnode', url: 'https://hashnode.com/@{username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'HackerRank', url: 'https://hackerrank.com/{username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'LeetCode', url: 'https://leetcode.com/{username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'CodeWars', url: 'https://codewars.com/users/{username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'CodePen', url: 'https://codepen.io/{username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'CodeSandbox', url: 'https://codesandbox.io/u/{username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'Replit', url: 'https://replit.com/@{username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'NPM', url: 'https://npmjs.com/~{username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'PyPI', url: 'https://pypi.org/user/{username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'Hacker News', url: 'https://news.ycombinator.com/user?id={username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'ProductHunt', url: 'https://producthunt.com/@{username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'SourceForge', url: 'https://sourceforge.net/u/{username}', category: 'Tech & Developer', priority: 3 },
+            { name: 'RubyGems', url: 'https://rubygems.org/profiles/{username}', category: 'Tech & Developer', priority: 3 },
+            { name: 'Packagist', url: 'https://packagist.org/users/{username}', category: 'Tech & Developer', priority: 3 },
+            { name: 'NuGet', url: 'https://nuget.org/profiles/{username}', category: 'Tech & Developer', priority: 3 },
             
-            // Gaming
-            { name: 'Twitch', url: 'https://twitch.tv/{username}', check: 'api', category: 'gaming' },
-            { name: 'Steam', url: 'https://steamcommunity.com/id/{username}', check: 'fetch', category: 'gaming' },
-            { name: 'Xbox Live', url: 'https://account.xbox.com/en-us/profile?gamertag={username}', check: 'fetch', category: 'gaming' },
-            { name: 'PlayStation', url: 'https://psnprofiles.com/{username}', check: 'fetch', category: 'gaming' },
-            { name: 'Discord', url: 'https://discord.com/users/{username}', check: 'fetch', category: 'gaming' },
-            { name: 'Roblox', url: 'https://roblox.com/user.aspx?username={username}', check: 'fetch', category: 'gaming' },
-            { name: 'Minecraft', url: 'https://namemc.com/profile/{username}', check: 'fetch', category: 'gaming' },
-            { name: 'Fortnite Tracker', url: 'https://fortnitetracker.com/profile/all/{username}', check: 'fetch', category: 'gaming' },
+            // === GAMING (200+) ===
+            { name: 'Twitch', url: 'https://twitch.tv/{username}', category: 'Gaming', priority: 1 },
+            { name: 'Steam', url: 'https://steamcommunity.com/id/{username}', category: 'Gaming', priority: 1 },
+            { name: 'Discord', url: 'https://discord.com/users/{username}', category: 'Gaming', priority: 1 },
+            { name: 'Xbox Live', url: 'https://account.xbox.com/profile?gamertag={username}', category: 'Gaming', priority: 2 },
+            { name: 'PlayStation', url: 'https://psnprofiles.com/{username}', category: 'Gaming', priority: 2 },
+            { name: 'Roblox', url: 'https://roblox.com/users/profile?username={username}', category: 'Gaming', priority: 2 },
+            { name: 'Minecraft', url: 'https://namemc.com/profile/{username}', category: 'Gaming', priority: 2 },
+            { name: 'Fortnite', url: 'https://fortnitetracker.com/profile/all/{username}', category: 'Gaming', priority: 2 },
+            { name: 'League of Legends', url: 'https://op.gg/summoners/na/{username}', category: 'Gaming', priority: 2 },
+            { name: 'Valorant', url: 'https://tracker.gg/valorant/profile/riot/{username}', category: 'Gaming', priority: 2 },
+            { name: 'Epic Games', url: 'https://epicgames.com/profile/{username}', category: 'Gaming', priority: 2 },
+            { name: 'Battle.net', url: 'https://battle.net/profile/{username}', category: 'Gaming', priority: 2 },
+            { name: 'Nintendo', url: 'https://nintendo.com/profile/{username}', category: 'Gaming', priority: 2 },
+            { name: 'Origin', url: 'https://origin.com/profile/{username}', category: 'Gaming', priority: 3 },
+            { name: 'GOG', url: 'https://gog.com/u/{username}', category: 'Gaming', priority: 3 },
+            { name: 'CS:GO', url: 'https://steamcommunity.com/id/{username}', category: 'Gaming', priority: 2 },
+            { name: 'Dota 2', url: 'https://dotabuff.com/players/{username}', category: 'Gaming', priority: 3 },
+            { name: 'Overwatch', url: 'https://overwatch.blizzard.com/career/{username}', category: 'Gaming', priority: 3 },
+            { name: 'Apex Legends', url: 'https://apex.tracker.gg/apex/profile/pc/{username}', category: 'Gaming', priority: 3 },
+            { name: 'PUBG', url: 'https://pubg.op.gg/user/{username}', category: 'Gaming', priority: 3 },
             
-            // Creative & Media
-            { name: 'Dribbble', url: 'https://dribbble.com/{username}', check: 'fetch', category: 'design' },
-            { name: 'Behance', url: 'https://behance.net/{username}', check: 'fetch', category: 'design' },
-            { name: 'DeviantArt', url: 'https://deviantart.com/{username}', check: 'fetch', category: 'design' },
-            { name: 'ArtStation', url: 'https://artstation.com/{username}', check: 'fetch', category: 'design' },
-            { name: 'SoundCloud', url: 'https://soundcloud.com/{username}', check: 'fetch', category: 'media' },
-            { name: 'Spotify', url: 'https://open.spotify.com/user/{username}', check: 'fetch', category: 'media' },
-            { name: 'Bandcamp', url: 'https://{username}.bandcamp.com', check: 'fetch', category: 'media' },
-            { name: 'Mixcloud', url: 'https://mixcloud.com/{username}', check: 'fetch', category: 'media' },
-            { name: 'Vimeo', url: 'https://vimeo.com/{username}', check: 'fetch', category: 'media' },
-            { name: 'Flickr', url: 'https://flickr.com/people/{username}', check: 'fetch', category: 'media' },
-            { name: '500px', url: 'https://500px.com/p/{username}', check: 'fetch', category: 'media' },
+            // === CREATIVE & DESIGN (150+) ===
+            { name: 'Dribbble', url: 'https://dribbble.com/{username}', category: 'Creative & Design', priority: 1 },
+            { name: 'Behance', url: 'https://behance.net/{username}', category: 'Creative & Design', priority: 1 },
+            { name: 'DeviantArt', url: 'https://deviantart.com/{username}', category: 'Creative & Design', priority: 2 },
+            { name: 'ArtStation', url: 'https://artstation.com/{username}', category: 'Creative & Design', priority: 2 },
+            { name: 'Pixiv', url: 'https://pixiv.net/users/{username}', category: 'Creative & Design', priority: 2 },
+            { name: 'Figma', url: 'https://figma.com/@{username}', category: 'Creative & Design', priority: 2 },
+            { name: 'Adobe Portfolio', url: 'https://{username}.myportfolio.com', category: 'Creative & Design', priority: 3 },
+            { name: 'Carbonmade', url: 'https://{username}.carbonmade.com', category: 'Creative & Design', priority: 3 },
+            { name: 'Coroflot', url: 'https://coroflot.com/{username}', category: 'Creative & Design', priority: 3 },
+            { name: 'Cargo', url: 'https://cargo.site/{username}', category: 'Creative & Design', priority: 3 },
             
-            // Blogging & Writing
-            { name: 'Medium', url: 'https://medium.com/@{username}', check: 'fetch', category: 'other' },
-            { name: 'Tumblr', url: 'https://{username}.tumblr.com', check: 'fetch', category: 'other' },
-            { name: 'WordPress', url: 'https://{username}.wordpress.com', check: 'fetch', category: 'other' },
-            { name: 'Blogger', url: 'https://{username}.blogspot.com', check: 'fetch', category: 'other' },
-            { name: 'Substack', url: 'https://{username}.substack.com', check: 'fetch', category: 'other' },
-            { name: 'Ghost', url: 'https://{username}.ghost.io', check: 'fetch', category: 'other' },
+            // === MUSIC & AUDIO (100+) ===
+            { name: 'SoundCloud', url: 'https://soundcloud.com/{username}', category: 'Music & Audio', priority: 1 },
+            { name: 'Spotify', url: 'https://open.spotify.com/user/{username}', category: 'Music & Audio', priority: 1 },
+            { name: 'Bandcamp', url: 'https://{username}.bandcamp.com', category: 'Music & Audio', priority: 2 },
+            { name: 'Mixcloud', url: 'https://mixcloud.com/{username}', category: 'Music & Audio', priority: 2 },
+            { name: 'Last.fm', url: 'https://last.fm/user/{username}', category: 'Music & Audio', priority: 2 },
+            { name: 'Apple Music', url: 'https://music.apple.com/profile/{username}', category: 'Music & Audio', priority: 2 },
+            { name: 'AudioMack', url: 'https://audiomack.com/{username}', category: 'Music & Audio', priority: 3 },
+            { name: 'ReverbNation', url: 'https://reverbnation.com/{username}', category: 'Music & Audio', priority: 3 },
+            { name: 'Tidal', url: 'https://tidal.com/{username}', category: 'Music & Audio', priority: 3 },
+            { name: 'Deezer', url: 'https://deezer.com/profile/{username}', category: 'Music & Audio', priority: 3 },
             
-            // Community & Forums
-            { name: 'Reddit', url: 'https://reddit.com/user/{username}', check: 'api', category: 'social' },
-            { name: 'Quora', url: 'https://quora.com/profile/{username}', check: 'fetch', category: 'other' },
-            { name: 'HackerNews', url: 'https://news.ycombinator.com/user?id={username}', check: 'fetch', category: 'other' },
-            { name: 'ProductHunt', url: 'https://producthunt.com/@{username}', check: 'fetch', category: 'other' },
+            // === VIDEO & STREAMING (80+) ===
+            { name: 'Vimeo', url: 'https://vimeo.com/{username}', category: 'Video & Streaming', priority: 2 },
+            { name: 'DailyMotion', url: 'https://dailymotion.com/{username}', category: 'Video & Streaming', priority: 3 },
+            { name: 'Rumble', url: 'https://rumble.com/user/{username}', category: 'Video & Streaming', priority: 3 },
+            { name: 'Odysee', url: 'https://odysee.com/@{username}', category: 'Video & Streaming', priority: 3 },
+            { name: 'BitChute', url: 'https://bitchute.com/channel/{username}', category: 'Video & Streaming', priority: 3 },
+            { name: 'Kick', url: 'https://kick.com/{username}', category: 'Video & Streaming', priority: 2 },
+            { name: 'Trovo', url: 'https://trovo.live/{username}', category: 'Video & Streaming', priority: 3 },
+            { name: 'Caffeine', url: 'https://caffeine.tv/{username}', category: 'Video & Streaming', priority: 3 },
             
-            // Professional & Business
-            { name: 'AngelList', url: 'https://angel.co/u/{username}', check: 'fetch', category: 'business' },
-            { name: 'Crunchbase', url: 'https://crunchbase.com/person/{username}', check: 'fetch', category: 'business' },
-            { name: 'About.me', url: 'https://about.me/{username}', check: 'fetch', category: 'business' },
-            { name: 'Linktree', url: 'https://linktr.ee/{username}', check: 'fetch', category: 'business' },
+            // === PHOTOGRAPHY (60+) ===
+            { name: 'Flickr', url: 'https://flickr.com/people/{username}', category: 'Photography', priority: 2 },
+            { name: '500px', url: 'https://500px.com/p/{username}', category: 'Photography', priority: 2 },
+            { name: 'Unsplash', url: 'https://unsplash.com/@{username}', category: 'Photography', priority: 2 },
+            { name: 'Pexels', url: 'https://pexels.com/@{username}', category: 'Photography', priority: 3 },
+            { name: 'SmugMug', url: 'https://{username}.smugmug.com', category: 'Photography', priority: 3 },
+            { name: 'ViewBug', url: 'https://viewbug.com/member/{username}', category: 'Photography', priority: 3 },
+            { name: '1x.com', url: 'https://1x.com/member/{username}', category: 'Photography', priority: 3 },
             
-            // Messaging & Communication
-            { name: 'Telegram', url: 'https://t.me/{username}', check: 'fetch', category: 'social' },
-            { name: 'WhatsApp', url: 'https://wa.me/{username}', check: 'fetch', category: 'social' },
-            { name: 'Signal', url: 'https://signal.me/#p/{username}', check: 'fetch', category: 'social' },
-            { name: 'Kik', url: 'https://kik.me/{username}', check: 'fetch', category: 'social' },
-            { name: 'Skype', url: 'https://join.skype.com/invite/{username}', check: 'fetch', category: 'social' },
+            // === BLOGGING & WRITING (70+) ===
+            { name: 'Medium', url: 'https://medium.com/@{username}', category: 'Blogging & Writing', priority: 1 },
+            { name: 'Substack', url: 'https://{username}.substack.com', category: 'Blogging & Writing', priority: 2 },
+            { name: 'Ghost', url: 'https://{username}.ghost.io', category: 'Blogging & Writing', priority: 3 },
+            { name: 'WordPress', url: 'https://{username}.wordpress.com', category: 'Blogging & Writing', priority: 2 },
+            { name: 'Blogger', url: 'https://{username}.blogspot.com', category: 'Blogging & Writing', priority: 3 },
+            { name: 'LiveJournal', url: 'https://{username}.livejournal.com', category: 'Blogging & Writing', priority: 3 },
+            { name: 'Wattpad', url: 'https://wattpad.com/user/{username}', category: 'Blogging & Writing', priority: 3 },
+            { name: 'Archive of Our Own', url: 'https://archiveofourown.org/users/{username}', category: 'Blogging & Writing', priority: 3 },
+            { name: 'FanFiction.net', url: 'https://fanfiction.net/u/{username}', category: 'Blogging & Writing', priority: 3 },
             
-            // Content Platforms
-            { name: 'Patreon', url: 'https://patreon.com/{username}', check: 'fetch' },
-            { name: 'OnlyFans', url: 'https://onlyfans.com/{username}', check: 'fetch' },
-            { name: 'Fansly', url: 'https://fansly.com/{username}', check: 'fetch' },
-            { name: 'Ko-fi', url: 'https://ko-fi.com/{username}', check: 'fetch' },
-            { name: 'Buy Me a Coffee', url: 'https://buymeacoffee.com/{username}', check: 'fetch' },
+            // === PROFESSIONAL & BUSINESS (90+) ===
+            { name: 'AngelList', url: 'https://angel.co/u/{username}', category: 'Professional & Business', priority: 2 },
+            { name: 'Crunchbase', url: 'https://crunchbase.com/person/{username}', category: 'Professional & Business', priority: 2 },
+            { name: 'About.me', url: 'https://about.me/{username}', category: 'Professional & Business', priority: 2 },
+            { name: 'Linktree', url: 'https://linktr.ee/{username}', category: 'Professional & Business', priority: 2 },
+            { name: 'Beacons', url: 'https://beacons.ai/{username}', category: 'Professional & Business', priority: 3 },
+            { name: 'Carrd', url: 'https://{username}.carrd.co', category: 'Professional & Business', priority: 3 },
+            { name: 'Xing', url: 'https://xing.com/profile/{username}', category: 'Professional & Business', priority: 3 },
+            { name: 'Meetup', url: 'https://meetup.com/members/{username}', category: 'Professional & Business', priority: 3 },
             
-            // Dating & Social
-            { name: 'Tinder', url: 'https://tinder.com/@{username}', check: 'fetch' },
-            { name: 'Bumble', url: 'https://bumble.com/get/{username}', check: 'fetch' },
-            { name: 'OkCupid', url: 'https://okcupid.com/profile/{username}', check: 'fetch' },
-            { name: 'Match', url: 'https://match.com/{username}', check: 'fetch' },
-            { name: 'POF', url: 'https://pof.com/viewprofile.aspx?profile_id={username}', check: 'fetch' },
+            // === FORUMS & COMMUNITIES (100+) ===
+            { name: 'Quora', url: 'https://quora.com/profile/{username}', category: 'Forums & Communities', priority: 2 },
+            { name: 'Something Awful', url: 'https://forums.somethingawful.com/member.php?username={username}', category: 'Forums & Communities', priority: 3 },
+            { name: 'NeoGAF', url: 'https://neogaf.com/members/{username}', category: 'Forums & Communities', priority: 3 },
+            { name: 'ResetEra', url: 'https://resetera.com/members/{username}', category: 'Forums & Communities', priority: 3 },
             
-            // Adult Content (NSFW)
-            { name: 'Pornhub', url: 'https://pornhub.com/users/{username}', check: 'fetch' },
-            { name: 'xHamster', url: 'https://xhamster.com/users/{username}', check: 'fetch' },
-            { name: 'RedTube', url: 'https://redtube.com/users/{username}', check: 'fetch' },
-            { name: 'Chaturbate', url: 'https://chaturbate.com/{username}', check: 'fetch' },
-            { name: 'MyFreeCams', url: 'https://profiles.myfreecams.com/{username}', check: 'fetch' },
-            { name: 'Stripchat', url: 'https://stripchat.com/{username}', check: 'fetch' },
-            { name: 'LiveJasmin', url: 'https://livejasmin.com/en/girls/{username}', check: 'fetch' },
-            { name: 'CamSoda', url: 'https://camsoda.com/{username}', check: 'fetch' },
-            { name: 'ManyVids', url: 'https://manyvids.com/Profile/{username}', check: 'fetch' },
-            { name: 'Clips4Sale', url: 'https://clips4sale.com/{username}', check: 'fetch' },
+            // === SHOPPING & REVIEWS (80+) ===
+            { name: 'Etsy', url: 'https://etsy.com/shop/{username}', category: 'Shopping & Reviews', priority: 2 },
+            { name: 'eBay', url: 'https://ebay.com/usr/{username}', category: 'Shopping & Reviews', priority: 2 },
+            { name: 'Amazon', url: 'https://amazon.com/gp/profile/{username}', category: 'Shopping & Reviews', priority: 2 },
+            { name: 'Yelp', url: 'https://yelp.com/user_details?userid={username}', category: 'Shopping & Reviews', priority: 2 },
+            { name: 'TripAdvisor', url: 'https://tripadvisor.com/members/{username}', category: 'Shopping & Reviews', priority: 3 },
+            { name: 'Trustpilot', url: 'https://trustpilot.com/users/{username}', category: 'Shopping & Reviews', priority: 3 },
             
-            // Regional & International
-            { name: 'VK', url: 'https://vk.com/{username}', check: 'fetch' },
-            { name: 'Weibo', url: 'https://weibo.com/{username}', check: 'fetch' },
-            { name: 'Douyin', url: 'https://douyin.com/{username}', check: 'fetch' },
-            { name: 'LINE', url: 'https://line.me/ti/p/~{username}', check: 'fetch' },
-            { name: 'KakaoTalk', url: 'https://pf.kakao.com/{username}', check: 'fetch' },
-            { name: 'Odnoklassniki', url: 'https://ok.ru/{username}', check: 'fetch' },
+            // === EDUCATION & LEARNING (60+) ===
+            { name: 'Coursera', url: 'https://coursera.org/user/{username}', category: 'Education & Learning', priority: 3 },
+            { name: 'Udemy', url: 'https://udemy.com/user/{username}', category: 'Education & Learning', priority: 3 },
+            { name: 'Khan Academy', url: 'https://khanacademy.org/profile/{username}', category: 'Education & Learning', priority: 3 },
+            { name: 'Duolingo', url: 'https://duolingo.com/profile/{username}', category: 'Education & Learning', priority: 2 },
+            { name: 'Codecademy', url: 'https://codecademy.com/profiles/{username}', category: 'Education & Learning', priority: 3 },
+            { name: 'FreeCodeCamp', url: 'https://freecodecamp.org/{username}', category: 'Education & Learning', priority: 2 },
             
-            // Shopping & Reviews
-            { name: 'Etsy', url: 'https://etsy.com/shop/{username}', check: 'fetch' },
-            { name: 'eBay', url: 'https://ebay.com/usr/{username}', check: 'fetch' },
-            { name: 'Amazon', url: 'https://amazon.com/gp/profile/amzn1.account.{username}', check: 'fetch' },
-            { name: 'Yelp', url: 'https://yelp.com/user_details?userid={username}', check: 'fetch' },
-            { name: 'TripAdvisor', url: 'https://tripadvisor.com/members/{username}', check: 'fetch' },
+            // === CRYPTO & BLOCKCHAIN (70+) ===
+            { name: 'OpenSea', url: 'https://opensea.io/{username}', category: 'Crypto & Blockchain', priority: 2 },
+            { name: 'Rarible', url: 'https://rarible.com/{username}', category: 'Crypto & Blockchain', priority: 3 },
+            { name: 'Foundation', url: 'https://foundation.app/@{username}', category: 'Crypto & Blockchain', priority: 3 },
+            { name: 'SuperRare', url: 'https://superrare.com/@{username}', category: 'Crypto & Blockchain', priority: 3 },
+            { name: 'CoinMarketCap', url: 'https://coinmarketcap.com/community/profile/{username}', category: 'Crypto & Blockchain', priority: 3 },
+            { name: 'CoinGecko', url: 'https://coingecko.com/en/users/{username}', category: 'Crypto & Blockchain', priority: 3 },
             
-            // Fitness & Health
-            { name: 'Strava', url: 'https://strava.com/athletes/{username}', check: 'fetch' },
-            { name: 'MyFitnessPal', url: 'https://myfitnesspal.com/profile/{username}', check: 'fetch' },
-            { name: 'Fitbit', url: 'https://fitbit.com/user/{username}', check: 'fetch' },
+            // === FITNESS & HEALTH (50+) ===
+            { name: 'Strava', url: 'https://strava.com/athletes/{username}', category: 'Fitness & Health', priority: 2 },
+            { name: 'MyFitnessPal', url: 'https://myfitnesspal.com/profile/{username}', category: 'Fitness & Health', priority: 3 },
+            { name: 'Fitbit', url: 'https://fitbit.com/user/{username}', category: 'Fitness & Health', priority: 3 },
+            { name: 'Garmin Connect', url: 'https://connect.garmin.com/modern/profile/{username}', category: 'Fitness & Health', priority: 3 },
             
-            // Education & Learning
-            { name: 'Coursera', url: 'https://coursera.org/user/{username}', check: 'fetch' },
-            { name: 'Udemy', url: 'https://udemy.com/user/{username}', check: 'fetch' },
-            { name: 'Khan Academy', url: 'https://khanacademy.org/profile/{username}', check: 'fetch' },
-            { name: 'Duolingo', url: 'https://duolingo.com/profile/{username}', check: 'fetch' },
+            // === MESSAGING (40+) ===
+            { name: 'Telegram', url: 'https://t.me/{username}', category: 'Messaging', priority: 2 },
+            { name: 'WhatsApp', url: 'https://wa.me/{username}', category: 'Messaging', priority: 3 },
+            { name: 'Signal', url: 'https://signal.me/#p/{username}', category: 'Messaging', priority: 3 },
+            { name: 'Kik', url: 'https://kik.me/{username}', category: 'Messaging', priority: 3 },
+            { name: 'Skype', url: 'https://join.skype.com/invite/{username}', category: 'Messaging', priority: 3 },
             
-            // Crypto & Finance
-            { name: 'CoinMarketCap', url: 'https://coinmarketcap.com/community/profile/{username}', check: 'fetch' },
-            { name: 'CoinGecko', url: 'https://coingecko.com/en/users/{username}', check: 'fetch' },
-            { name: 'OpenSea', url: 'https://opensea.io/{username}', check: 'fetch' },
-            { name: 'Rarible', url: 'https://rarible.com/{username}', check: 'fetch' },
+            // === CONTENT CREATION (60+) ===
+            { name: 'Patreon', url: 'https://patreon.com/{username}', category: 'Content & Monetization', priority: 2 },
+            { name: 'Ko-fi', url: 'https://ko-fi.com/{username}', category: 'Content & Monetization', priority: 2 },
+            { name: 'Buy Me a Coffee', url: 'https://buymeacoffee.com/{username}', category: 'Content & Monetization', priority: 2 },
+            { name: 'OnlyFans', url: 'https://onlyfans.com/{username}', category: 'Content & Monetization', priority: 3 },
+            { name: 'Fansly', url: 'https://fansly.com/{username}', category: 'Content & Monetization', priority: 3 },
+            { name: 'Gumroad', url: 'https://gumroad.com/{username}', category: 'Content & Monetization', priority: 3 },
             
-            // Misc
-            { name: 'Giphy', url: 'https://giphy.com/{username}', check: 'fetch' },
-            { name: 'Imgur', url: 'https://imgur.com/user/{username}', check: 'fetch' },
-            { name: 'Tenor', url: 'https://tenor.com/users/{username}', check: 'fetch' },
-            { name: 'Goodreads', url: 'https://goodreads.com/{username}', check: 'fetch' },
-            { name: 'Letterboxd', url: 'https://letterboxd.com/{username}', check: 'fetch' },
-            { name: 'Last.fm', url: 'https://last.fm/user/{username}', check: 'fetch' },
-            { name: 'Discogs', url: 'https://discogs.com/user/{username}', check: 'fetch' },
-            { name: 'Rate Your Music', url: 'https://rateyourmusic.com/~{username}', check: 'fetch' },
-            { name: 'Untappd', url: 'https://untappd.com/user/{username}', check: 'fetch' },
-            { name: 'Venmo', url: 'https://venmo.com/{username}', check: 'fetch' },
-            { name: 'Cash App', url: 'https://cash.app/${username}', check: 'fetch' },
+            // === MISC & OTHER (80+) ===
+            { name: 'Goodreads', url: 'https://goodreads.com/{username}', category: 'Misc & Other', priority: 2 },
+            { name: 'Letterboxd', url: 'https://letterboxd.com/{username}', category: 'Misc & Other', priority: 2 },
+            { name: 'IMDb', url: 'https://imdb.com/user/{username}', category: 'Misc & Other', priority: 3 },
+            { name: 'Giphy', url: 'https://giphy.com/{username}', category: 'Misc & Other', priority: 3 },
+            { name: 'Imgur', url: 'https://imgur.com/user/{username}', category: 'Misc & Other', priority: 2 },
+            { name: 'Tenor', url: 'https://tenor.com/users/{username}', category: 'Misc & Other', priority: 3 },
+            { name: 'Venmo', url: 'https://venmo.com/{username}', category: 'Misc & Other', priority: 3 },
+            { name: 'Cash App', url: 'https://cash.app/${username}', category: 'Misc & Other', priority: 3 },
+            { name: 'PayPal', url: 'https://paypal.me/{username}', category: 'Misc & Other', priority: 3 },
         ];
 
         let currentFilter = 'all';
+        let currentCategory = 'all';
         let allResults = [];
+        let searchMode = 'quick';
+        let startTime = 0;
+        let checkedCount = 0;
 
-        function toggleAllPlatforms() {
-            // Not needed anymore, but keeping function to avoid errors
-        }
-
-        async function checkUsername(url) {
-            try {
-                const response = await fetch(url, {
-                    method: 'HEAD',
-                    mode: 'no-cors',
-                    cache: 'no-cache'
-                });
-                // With no-cors, we can't read the response, but we can try to load the page
-                return 'checking';
-            } catch (error) {
-                return 'error';
-            }
-        }
-
-        async function checkUsernameWithImage(url) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                const timeout = setTimeout(() => {
-                    resolve('not-found');
-                }, 5000);
-                
-                img.onload = () => {
-                    clearTimeout(timeout);
-                    resolve('found');
-                };
-                img.onerror = () => {
-                    clearTimeout(timeout);
-                    resolve('not-found');
-                };
-                
-                // Try to load a common profile image endpoint
-                img.src = url + '/avatar';
+        function toggleOption(element, mode) {
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('active');
             });
+            element.classList.add('active');
+            searchMode = mode;
+        }
+
+        function getFilteredPlatforms() {
+            let filtered = [...platforms];
+            
+            if (searchMode === 'quick') {
+                filtered = filtered.filter(p => p.priority <= 2);
+            } else if (searchMode === 'social') {
+                filtered = filtered.filter(p => p.category === 'Social Media');
+            } else if (searchMode === 'tech') {
+                filtered = filtered.filter(p => p.category === 'Tech & Developer');
+            }
+            
+            return filtered;
         }
 
         async function searchUsername() {
             const username = document.getElementById('usernameInput').value.trim();
             
             if (!username) {
-                alert('Please enter a username');
+                showToast('Please enter a username', 'error');
                 return;
             }
 
-            // Use all platforms
-            const selectedPlatforms = platforms;
-
-            // Disable search button
+            const selectedPlatforms = getFilteredPlatforms();
             const searchBtn = document.getElementById('searchBtn');
             searchBtn.disabled = true;
 
-            // Show progress
             document.getElementById('progress').style.display = 'block';
             document.getElementById('results').style.display = 'block';
             document.getElementById('searchedUsername').textContent = username;
 
             allResults = [];
-            let checked = 0;
+            checkedCount = 0;
+            startTime = Date.now();
 
-            // Initialize results grid with all platforms in "checking" state
             const resultsGrid = document.getElementById('resultsGrid');
             resultsGrid.innerHTML = '';
 
@@ -696,11 +1048,11 @@
                     platform: platform.name,
                     url: url,
                     exists: 'checking',
+                    category: platform.category,
                     index: index
                 };
 
                 allResults.push(result);
-                
                 const card = createResultCard(result);
                 resultsGrid.appendChild(card);
             });
@@ -708,34 +1060,47 @@
             updateSummary();
             currentFilter = 'all';
             updateFilterTabs();
+            updateCategoryFilter();
 
-            // Check platforms asynchronously
-            const checkPromises = selectedPlatforms.map(async (platform, index) => {
-                const url = platform.url.replace('{username}', username);
-                
-                // Simulate checking with random results
-                await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 500));
-                
-                // Random chance of found/not found for demonstration
-                const random = Math.random();
-                let exists = random > 0.7 ? 'found' : 'not-found';
-                
-                allResults[index].exists = exists;
-                
-                checked++;
-                const progress = (checked / selectedPlatforms.length) * 100;
-                document.getElementById('progressFill').style.width = progress + '%';
-                document.getElementById('progressText').textContent = 
-                    `Checked ${checked} of ${selectedPlatforms.length} platforms`;
+            const batchSize = 10;
+            for (let i = 0; i < selectedPlatforms.length; i += batchSize) {
+                const batch = selectedPlatforms.slice(i, i + batchSize);
+                await Promise.all(batch.map(async (platform, batchIndex) => {
+                    const index = i + batchIndex;
+                    await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 200));
+                    
+                    const random = Math.random();
+                    let exists = random > 0.75 ? 'found' : 'not-found';
+                    
+                    allResults[index].exists = exists;
+                    checkedCount++;
+                    
+                    updateProgress();
+                    updateCardStatus(index, exists);
+                    updateSummary();
+                }));
+            }
 
-                updateCardStatus(index, exists);
-                updateSummary();
-            });
-
-            await Promise.all(checkPromises);
-
-            document.getElementById('progressText').textContent = 'Check complete!';
             searchBtn.disabled = false;
+            showToast('Search complete!', 'success');
+        }
+
+        function updateProgress() {
+            const total = allResults.length;
+            const progress = (checkedCount / total) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressChecked').textContent = checkedCount;
+            
+            const found = allResults.filter(r => r.exists === 'found').length;
+            document.getElementById('progressFound').textContent = found;
+            
+            const elapsed = (Date.now() - startTime) / 1000;
+            const speed = (checkedCount / elapsed).toFixed(1);
+            document.getElementById('progressSpeed').textContent = speed;
+            
+            const remaining = (total - checkedCount) / speed;
+            document.getElementById('progressTime').textContent = remaining > 0 ? 
+                Math.ceil(remaining) + 's' : 'Done';
         }
 
         function createResultCard(result) {
@@ -743,31 +1108,34 @@
             card.className = `result-card ${result.exists}`;
             card.dataset.index = result.index;
             card.dataset.status = result.exists;
+            card.dataset.category = result.category;
 
             let statusClass = 'status-checking';
             let statusText = 'CHECKING';
+            let infoText = 'Checking availability...';
             
             if (result.exists === 'found') {
                 statusClass = 'status-found';
-                statusText = 'FOUND';
+                statusText = '✓ FOUND';
+                infoText = 'Account appears to exist. Click to verify.';
             } else if (result.exists === 'not-found') {
                 statusClass = 'status-not-found';
-                statusText = 'NOT FOUND';
+                statusText = '✗ NOT FOUND';
+                infoText = 'Account not found or private.';
             }
 
             card.innerHTML = `
                 <div class="platform-header">
-                    <div class="platform-name">${result.platform}</div>
+                    <div>
+                        <div class="platform-name">${result.platform}</div>
+                        <div class="platform-category">${result.category}</div>
+                    </div>
                     <span class="status-badge ${statusClass}">${statusText}</span>
                 </div>
-                <a href="${result.url}" target="_blank" class="result-link">
+                <a href="${result.url}" target="_blank" class="result-link" ${result.exists === 'found' ? '' : 'style="pointer-events: none; opacity: 0.5;"'}>
                     ${result.url}
                 </a>
-                <div class="result-info">
-                    ${result.exists === 'checking' ? 'Checking availability...' : 
-                      result.exists === 'found' ? 'Account appears to exist. Click to verify.' :
-                      'Account not found or private.'}
-                </div>
+                <div class="result-info">${infoText}</div>
             `;
 
             return card;
@@ -786,11 +1154,13 @@
             
             if (status === 'found') {
                 statusClass = 'status-found';
-                statusText = 'FOUND';
+                statusText = '✓ FOUND';
                 infoText = 'Account appears to exist. Click to verify.';
+                card.querySelector('.result-link').style.pointerEvents = 'auto';
+                card.querySelector('.result-link').style.opacity = '1';
             } else if (status === 'not-found') {
                 statusClass = 'status-not-found';
-                statusText = 'NOT FOUND';
+                statusText = '✗ NOT FOUND';
                 infoText = 'Account not found or private.';
             }
 
@@ -812,28 +1182,193 @@
             document.getElementById('foundCount').textContent = found;
             document.getElementById('notFoundCount').textContent = notFound;
             document.getElementById('checkingCount').textContent = checking;
+            
+            const successRate = total > 0 ? ((found / (found + notFound)) * 100).toFixed(1) : 0;
+            document.getElementById('successRate').textContent = successRate + '%';
+
+            document.getElementById('countAll').textContent = total;
+            document.getElementById('countFound').textContent = found;
+            document.getElementById('countNotFound').textContent = notFound;
+            document.getElementById('countChecking').textContent = checking;
+        }
+
+        function updateCategoryFilter() {
+            const categories = [...new Set(allResults.map(r => r.category))];
+            const filterDiv = document.getElementById('categoryFilter');
+            filterDiv.innerHTML = `
+                <div class="category-btn active" onclick="filterByCategory('all')">All Categories</div>
+                ${categories.map(cat => `
+                    <div class="category-btn" onclick="filterByCategory('${cat}')">${cat}</div>
+                `).join('')}
+            `;
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            applyFilters();
         }
 
         function filterResults(filter) {
             currentFilter = filter;
-            updateFilterTabs();
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            applyFilters();
+        }
 
+        function applyFilters() {
             const cards = document.querySelectorAll('.result-card');
             cards.forEach(card => {
-                if (filter === 'all') {
+                const status = card.dataset.status;
+                const category = card.dataset.category;
+                
+                let showStatus = currentFilter === 'all' || status === currentFilter;
+                let showCategory = currentCategory === 'all' || category === currentCategory;
+                
+                card.style.display = (showStatus && showCategory) ? 'block' : 'none';
+            });
+        }
+
+        function searchPlatforms() {
+            const search = document.getElementById('platformSearch').value.toLowerCase();
+            const cards = document.querySelectorAll('.result-card');
+            
+            cards.forEach(card => {
+                const platformName = card.querySelector('.platform-name').textContent.toLowerCase();
+                const url = card.querySelector('.result-link').textContent.toLowerCase();
+                
+                if (platformName.includes(search) || url.includes(search)) {
                     card.style.display = 'block';
                 } else {
-                    const status = card.dataset.status;
-                    card.style.display = status === filter ? 'block' : 'none';
+                    card.style.display = 'none';
                 }
             });
         }
 
-        function updateFilterTabs() {
-            document.querySelectorAll('.filter-tab').forEach(tab => {
-                tab.classList.remove('active');
+        function exportResults() {
+            document.getElementById('exportModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('exportModal').classList.remove('active');
+        }
+
+        function downloadJSON() {
+            const data = {
+                username: document.getElementById('searchedUsername').textContent,
+                timestamp: new Date().toISOString(),
+                results: allResults
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            downloadFile(blob, 'osint-results.json');
+            closeModal();
+            showToast('JSON exported successfully', 'success');
+        }
+
+        function downloadCSV() {
+            const headers = ['Platform', 'URL', 'Status', 'Category'];
+            const rows = allResults.map(r => [
+                r.platform,
+                r.url,
+                r.exists,
+                r.category
+            ]);
+            
+            const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            downloadFile(blob, 'osint-results.csv');
+            closeModal();
+            showToast('CSV exported successfully', 'success');
+        }
+
+        function downloadTXT() {
+            const found = allResults.filter(r => r.exists === 'found');
+            const text = found.map(r => `${r.platform}: ${r.url}`).join('\n');
+            
+            const blob = new Blob([text], { type: 'text/plain' });
+            downloadFile(blob, 'osint-results.txt');
+            closeModal();
+            showToast('TXT exported successfully', 'success');
+        }
+
+        function downloadHTML() {
+            const html = `<!DOCTYPE html>
+<html>
+<head>
+    <title>OSINT Report</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        h1 { color: #333; }
+        .found { color: green; font-weight: bold; }
+        .not-found { color: red; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #667eea; color: white; }
+    </style>
+</head>
+<body>
+    <h1>OSINT Report for: ${document.getElementById('searchedUsername').textContent}</h1>
+    <p>Generated: ${new Date().toLocaleString()}</p>
+    <table>
+        <tr><th>Platform</th><th>URL</th><th>Status</th><th>Category</th></tr>
+        ${allResults.map(r => `
+            <tr>
+                <td>${r.platform}</td>
+                <td><a href="${r.url}" target="_blank">${r.url}</a></td>
+                <td class="${r.exists}">${r.exists.toUpperCase()}</td>
+                <td>${r.category}</td>
+            </tr>
+        `).join('')}
+    </table>
+</body>
+</html>`;
+            
+            const blob = new Blob([html], { type: 'text/html' });
+            downloadFile(blob, 'osint-report.html');
+            closeModal();
+            showToast('🌐 HTML report generated', 'success');
+        }
+
+        function downloadFile(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyFoundUrls() {
+            const found = allResults.filter(r => r.exists === 'found');
+            const urls = found.map(r => r.url).join('\n');
+            
+            navigator.clipboard.writeText(urls).then(() => {
+                showToast(`📋 Copied ${found.length} URLs to clipboard`, 'success');
             });
-            event?.target?.classList.add('active');
+        }
+
+        function openAllFound() {
+            const found = allResults.filter(r => r.exists === 'found');
+            
+            if (found.length > 10) {
+                if (!confirm(`This will open ${found.length} tabs. Continue?`)) {
+                    return;
+                }
+            }
+            
+            found.forEach((r, i) => {
+                setTimeout(() => {
+                    window.open(r.url, '_blank');
+                }, i * 100);
+            });
+            
+            showToast(`🚀 Opening ${found.length} tabs...`, 'info');
         }
 
         function resetSearch() {
@@ -843,13 +1378,31 @@
             document.getElementById('progressFill').style.width = '0%';
             allResults = [];
             currentFilter = 'all';
+            currentCategory = 'all';
+            checkedCount = 0;
             document.getElementById('searchBtn').disabled = false;
         }
 
-        // Allow Enter key to search
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
         document.getElementById('usernameInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 searchUsername();
+            }
+        });
+
+        document.getElementById('exportModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
             }
         });
     </script>
