@@ -1172,6 +1172,16 @@
             info.textContent = infoText;
         }
 
+        function updateFilterTabs() {
+            const tabs = document.querySelectorAll('.filter-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.getAttribute('data-filter') === currentFilter) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
         function updateSummary() {
             const total = allResults.length;
             const found = allResults.filter(r => r.exists === 'found').length;
