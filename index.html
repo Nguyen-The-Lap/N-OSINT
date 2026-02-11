@@ -1299,8 +1299,11 @@
                 statusClass = 'status-found';
                 statusText = '✓ FOUND';
                 infoText = 'Account appears to exist. Click to verify.';
-                card.querySelector('.result-link').style.pointerEvents = 'auto';
-                card.querySelector('.result-link').style.opacity = '1';
+                const resultLink = card.querySelector('.result-link');
+                if (resultLink) {
+                    resultLink.style.pointerEvents = 'auto';
+                    resultLink.style.opacity = '1';
+                }
             } else if (status === 'not-found') {
                 statusClass = 'status-not-found';
                 statusText = '✗ NOT FOUND';
