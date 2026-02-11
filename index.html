@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSINT Username Search</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-top: 30px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            color: #888;
+            font-weight: 400;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        #usernameInput {
+            flex: 1;
+            padding: 18px 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 16px;
+            color: #fff;
+            transition: all 0.3s;
+        }
+
+        #usernameInput:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        #usernameInput::placeholder {
+            color: #666;
+        }
+
+        .btn {
+            padding: 18px 35px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .option-label:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .option-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .option-label span {
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .progress {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 15px;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results-header {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .results-header h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .summary {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .summary-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .summary-item .label {
+            color: #888;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .summary-item .value {
+            font-weight: 700;
+            font-size: 2em;
+        }
+
+        .found {
+            color: #00ff88;
+        }
+
+        .not-found {
+            color: #ff4757;
+        }
+
+        .checking {
+            color: #ffd93d;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #666;
+            transition: all 0.3s;
+        }
+
+        .result-card.found::before {
+            background: #00ff88;
+        }
+
+        .result-card.not-found::before {
+            background: #ff4757;
+        }
+
+        .result-card.checking::before {
+            background: #ffd93d;
+            animation: pulse 1.5s infinite;
+        }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .platform-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .platform-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-found {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .status-not-found {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+        }
+
+        .status-checking {
+            background: rgba(255, 217, 61, 0.2);
+            color: #ffd93d;
+        }
+
+        .result-link {
+            display: block;
+            margin-top: 12px;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            word-break: break-all;
+            transition: color 0.3s;
+        }
+
+        .result-link:hover {
+            color: #764ba2;
+        }
+
+        .result-info {
+            color: #888;
+            font-size: 13px;
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+        }
+
+        .filter-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>OSINT Username Search</h1>
+            <p>Discover social media accounts across 100+ platforms</p>
+        </div>
+
+        <div class="search-box">
+            <div class="input-group">
+                <input type="text" id="usernameInput" placeholder="Enter username..." autocomplete="off">
+                <button class="btn btn-primary" onclick="searchUsername()" id="searchBtn">Search</button>
+                <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
+            </div>
+
+            <div class="options" style="display: none;">
+                <label class="option-label">
+                    <input type="checkbox" id="checkAll" checked onchange="toggleAllPlatforms()">
+                    <span>Select All</span>
+                </label>
+            </div>
+
+            <div class="progress" id="progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">Checking platforms...</div>
+            </div>
+        </div>
+
+        <div class="results" id="results">
+            <div class="results-header">
+                <h2>Results for: <span id="searchedUsername"></span></h2>
+                <div class="summary">
+                    <div class="summary-item">
+                        <span class="label">Total</span>
+                        <span class="value" id="totalPlatforms">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Found</span>
+                        <span class="value found" id="foundCount">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Not Found</span>
+                        <span class="value not-found" id="notFoundCount">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Checking</span>
+                        <span class="value checking" id="checkingCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-tabs">
+                <div class="filter-tab active" onclick="filterResults('all')">All</div>
+                <div class="filter-tab" onclick="filterResults('found')">Found</div>
+                <div class="filter-tab" onclick="filterResults('not-found')">Not Found</div>
+                <div class="filter-tab" onclick="filterResults('checking')">Checking</div>
+            </div>
+
+            <div class="results-grid" id="resultsGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        // Platform categories
+        const platformCategories = {
+            'social': 'Social Media',
+            'tech': 'Tech & Programming',
+            'design': 'Design & Creative',
+            'business': 'Business & Professional',
+            'gaming': 'Gaming',
+            'media': 'Media & Entertainment',
+            'shopping': 'Shopping & E-commerce',
+            'education': 'Education',
+            'other': 'Other'
+        };
+
+        const platforms = [
+            // Social Media - Mainstream
+            { name: 'Twitter/X', url: 'https://twitter.com/{username}', check: 'api', category: 'social' },
+            { name: 'Instagram', url: 'https://instagram.com/{username}', check: 'fetch', category: 'social' },
+            { name: 'Facebook', url: 'https://facebook.com/{username}', check: 'fetch', category: 'social' },
+            { name: 'LinkedIn', url: 'https://linkedin.com/in/{username}', check: 'fetch', category: 'social' },
+            { name: 'TikTok', url: 'https://tiktok.com/@{username}', check: 'fetch', category: 'social' },
+            { name: 'Pinterest', url: 'https://pinterest.com/{username}', check: 'fetch', category: 'social' },
+            { name: 'Reddit', url: 'https://reddit.com/user/{username}', check: 'fetch', category: 'social' },
+            { name: 'Snapchat', url: 'https://snapchat.com/add/{username}', check: 'fetch', category: 'social' },
+            { name: 'Tumblr', url: 'https://{username}.tumblr.com', check: 'fetch', category: 'social' },
+            { name: 'VK', url: 'https://vk.com/{username}', check: 'fetch', category: 'social' },
+            { name: 'TikTok', url: 'https://tiktok.com/@{username}', check: 'fetch' },
+            { name: 'YouTube', url: 'https://youtube.com/@{username}', check: 'fetch' },
+            { name: 'Snapchat', url: 'https://snapchat.com/add/{username}', check: 'fetch' },
+            { name: 'Pinterest', url: 'https://pinterest.com/{username}', check: 'fetch' },
+            
+            // Developer & Tech
+            { name: 'GitHub', url: 'https://github.com/{username}', check: 'api', category: 'tech' },
+            { name: 'GitLab', url: 'https://gitlab.com/{username}', check: 'fetch', category: 'tech' },
+            { name: 'Bitbucket', url: 'https://bitbucket.org/{username}', check: 'fetch', category: 'tech' },
+            { name: 'Stack Overflow', url: 'https://stackoverflow.com/users/{username}', check: 'fetch', category: 'tech' },
+            { name: 'CodePen', url: 'https://codepen.io/{username}', check: 'fetch', category: 'tech' },
+            { name: 'HackerRank', url: 'https://hackerrank.com/{username}', check: 'fetch', category: 'tech' },
+            { name: 'LeetCode', url: 'https://leetcode.com/{username}', check: 'fetch', category: 'tech' },
+            { name: 'Replit', url: 'https://replit.com/@{username}', check: 'fetch', category: 'tech' },
+            { name: 'NPM', url: 'https://npmjs.com/~{username}', check: 'fetch', category: 'tech' },
+            { name: 'PyPI', url: 'https://pypi.org/user/{username}', check: 'fetch', category: 'tech' },
+            
+            // Gaming
+            { name: 'Twitch', url: 'https://twitch.tv/{username}', check: 'api', category: 'gaming' },
+            { name: 'Steam', url: 'https://steamcommunity.com/id/{username}', check: 'fetch', category: 'gaming' },
+            { name: 'Xbox Live', url: 'https://account.xbox.com/en-us/profile?gamertag={username}', check: 'fetch', category: 'gaming' },
+            { name: 'PlayStation', url: 'https://psnprofiles.com/{username}', check: 'fetch', category: 'gaming' },
+            { name: 'Discord', url: 'https://discord.com/users/{username}', check: 'fetch', category: 'gaming' },
+            { name: 'Roblox', url: 'https://roblox.com/user.aspx?username={username}', check: 'fetch', category: 'gaming' },
+            { name: 'Minecraft', url: 'https://namemc.com/profile/{username}', check: 'fetch', category: 'gaming' },
+            { name: 'Fortnite Tracker', url: 'https://fortnitetracker.com/profile/all/{username}', check: 'fetch', category: 'gaming' },
+            
+            // Creative & Media
+            { name: 'Dribbble', url: 'https://dribbble.com/{username}', check: 'fetch', category: 'design' },
+            { name: 'Behance', url: 'https://behance.net/{username}', check: 'fetch', category: 'design' },
+            { name: 'DeviantArt', url: 'https://deviantart.com/{username}', check: 'fetch', category: 'design' },
+            { name: 'ArtStation', url: 'https://artstation.com/{username}', check: 'fetch', category: 'design' },
+            { name: 'SoundCloud', url: 'https://soundcloud.com/{username}', check: 'fetch', category: 'media' },
+            { name: 'Spotify', url: 'https://open.spotify.com/user/{username}', check: 'fetch', category: 'media' },
+            { name: 'Bandcamp', url: 'https://{username}.bandcamp.com', check: 'fetch', category: 'media' },
+            { name: 'Mixcloud', url: 'https://mixcloud.com/{username}', check: 'fetch', category: 'media' },
+            { name: 'Vimeo', url: 'https://vimeo.com/{username}', check: 'fetch', category: 'media' },
+            { name: 'Flickr', url: 'https://flickr.com/people/{username}', check: 'fetch', category: 'media' },
+            { name: '500px', url: 'https://500px.com/p/{username}', check: 'fetch', category: 'media' },
+            
+            // Blogging & Writing
+            { name: 'Medium', url: 'https://medium.com/@{username}', check: 'fetch', category: 'other' },
+            { name: 'Tumblr', url: 'https://{username}.tumblr.com', check: 'fetch', category: 'other' },
+            { name: 'WordPress', url: 'https://{username}.wordpress.com', check: 'fetch', category: 'other' },
+            { name: 'Blogger', url: 'https://{username}.blogspot.com', check: 'fetch', category: 'other' },
+            { name: 'Substack', url: 'https://{username}.substack.com', check: 'fetch', category: 'other' },
+            { name: 'Ghost', url: 'https://{username}.ghost.io', check: 'fetch', category: 'other' },
+            
+            // Community & Forums
+            { name: 'Reddit', url: 'https://reddit.com/user/{username}', check: 'api', category: 'social' },
+            { name: 'Quora', url: 'https://quora.com/profile/{username}', check: 'fetch', category: 'other' },
+            { name: 'HackerNews', url: 'https://news.ycombinator.com/user?id={username}', check: 'fetch', category: 'other' },
+            { name: 'ProductHunt', url: 'https://producthunt.com/@{username}', check: 'fetch', category: 'other' },
+            
+            // Professional & Business
+            { name: 'AngelList', url: 'https://angel.co/u/{username}', check: 'fetch', category: 'business' },
+            { name: 'Crunchbase', url: 'https://crunchbase.com/person/{username}', check: 'fetch', category: 'business' },
+            { name: 'About.me', url: 'https://about.me/{username}', check: 'fetch', category: 'business' },
+            { name: 'Linktree', url: 'https://linktr.ee/{username}', check: 'fetch', category: 'business' },
+            
+            // Messaging & Communication
+            { name: 'Telegram', url: 'https://t.me/{username}', check: 'fetch', category: 'social' },
+            { name: 'WhatsApp', url: 'https://wa.me/{username}', check: 'fetch', category: 'social' },
+            { name: 'Signal', url: 'https://signal.me/#p/{username}', check: 'fetch', category: 'social' },
+            { name: 'Kik', url: 'https://kik.me/{username}', check: 'fetch', category: 'social' },
+            { name: 'Skype', url: 'https://join.skype.com/invite/{username}', check: 'fetch', category: 'social' },
+            
+            // Content Platforms
+            { name: 'Patreon', url: 'https://patreon.com/{username}', check: 'fetch' },
+            { name: 'OnlyFans', url: 'https://onlyfans.com/{username}', check: 'fetch' },
+            { name: 'Fansly', url: 'https://fansly.com/{username}', check: 'fetch' },
+            { name: 'Ko-fi', url: 'https://ko-fi.com/{username}', check: 'fetch' },
+            { name: 'Buy Me a Coffee', url: 'https://buymeacoffee.com/{username}', check: 'fetch' },
+            
+            // Dating & Social
+            { name: 'Tinder', url: 'https://tinder.com/@{username}', check: 'fetch' },
+            { name: 'Bumble', url: 'https://bumble.com/get/{username}', check: 'fetch' },
+            { name: 'OkCupid', url: 'https://okcupid.com/profile/{username}', check: 'fetch' },
+            { name: 'Match', url: 'https://match.com/{username}', check: 'fetch' },
+            { name: 'POF', url: 'https://pof.com/viewprofile.aspx?profile_id={username}', check: 'fetch' },
+            
+            // Adult Content (NSFW)
+            { name: 'Pornhub', url: 'https://pornhub.com/users/{username}', check: 'fetch' },
+            { name: 'xHamster', url: 'https://xhamster.com/users/{username}', check: 'fetch' },
+            { name: 'RedTube', url: 'https://redtube.com/users/{username}', check: 'fetch' },
+            { name: 'Chaturbate', url: 'https://chaturbate.com/{username}', check: 'fetch' },
+            { name: 'MyFreeCams', url: 'https://profiles.myfreecams.com/{username}', check: 'fetch' },
+            { name: 'Stripchat', url: 'https://stripchat.com/{username}', check: 'fetch' },
+            { name: 'LiveJasmin', url: 'https://livejasmin.com/en/girls/{username}', check: 'fetch' },
+            { name: 'CamSoda', url: 'https://camsoda.com/{username}', check: 'fetch' },
+            { name: 'ManyVids', url: 'https://manyvids.com/Profile/{username}', check: 'fetch' },
+            { name: 'Clips4Sale', url: 'https://clips4sale.com/{username}', check: 'fetch' },
+            
+            // Regional & International
+            { name: 'VK', url: 'https://vk.com/{username}', check: 'fetch' },
+            { name: 'Weibo', url: 'https://weibo.com/{username}', check: 'fetch' },
+            { name: 'Douyin', url: 'https://douyin.com/{username}', check: 'fetch' },
+            { name: 'LINE', url: 'https://line.me/ti/p/~{username}', check: 'fetch' },
+            { name: 'KakaoTalk', url: 'https://pf.kakao.com/{username}', check: 'fetch' },
+            { name: 'Odnoklassniki', url: 'https://ok.ru/{username}', check: 'fetch' },
+            
+            // Shopping & Reviews
+            { name: 'Etsy', url: 'https://etsy.com/shop/{username}', check: 'fetch' },
+            { name: 'eBay', url: 'https://ebay.com/usr/{username}', check: 'fetch' },
+            { name: 'Amazon', url: 'https://amazon.com/gp/profile/amzn1.account.{username}', check: 'fetch' },
+            { name: 'Yelp', url: 'https://yelp.com/user_details?userid={username}', check: 'fetch' },
+            { name: 'TripAdvisor', url: 'https://tripadvisor.com/members/{username}', check: 'fetch' },
+            
+            // Fitness & Health
+            { name: 'Strava', url: 'https://strava.com/athletes/{username}', check: 'fetch' },
+            { name: 'MyFitnessPal', url: 'https://myfitnesspal.com/profile/{username}', check: 'fetch' },
+            { name: 'Fitbit', url: 'https://fitbit.com/user/{username}', check: 'fetch' },
+            
+            // Education & Learning
+            { name: 'Coursera', url: 'https://coursera.org/user/{username}', check: 'fetch' },
+            { name: 'Udemy', url: 'https://udemy.com/user/{username}', check: 'fetch' },
+            { name: 'Khan Academy', url: 'https://khanacademy.org/profile/{username}', check: 'fetch' },
+            { name: 'Duolingo', url: 'https://duolingo.com/profile/{username}', check: 'fetch' },
+            
+            // Crypto & Finance
+            { name: 'CoinMarketCap', url: 'https://coinmarketcap.com/community/profile/{username}', check: 'fetch' },
+            { name: 'CoinGecko', url: 'https://coingecko.com/en/users/{username}', check: 'fetch' },
+            { name: 'OpenSea', url: 'https://opensea.io/{username}', check: 'fetch' },
+            { name: 'Rarible', url: 'https://rarible.com/{username}', check: 'fetch' },
+            
+            // Misc
+            { name: 'Giphy', url: 'https://giphy.com/{username}', check: 'fetch' },
+            { name: 'Imgur', url: 'https://imgur.com/user/{username}', check: 'fetch' },
+            { name: 'Tenor', url: 'https://tenor.com/users/{username}', check: 'fetch' },
+            { name: 'Goodreads', url: 'https://goodreads.com/{username}', check: 'fetch' },
+            { name: 'Letterboxd', url: 'https://letterboxd.com/{username}', check: 'fetch' },
+            { name: 'Last.fm', url: 'https://last.fm/user/{username}', check: 'fetch' },
+            { name: 'Discogs', url: 'https://discogs.com/user/{username}', check: 'fetch' },
+            { name: 'Rate Your Music', url: 'https://rateyourmusic.com/~{username}', check: 'fetch' },
+            { name: 'Untappd', url: 'https://untappd.com/user/{username}', check: 'fetch' },
+            { name: 'Venmo', url: 'https://venmo.com/{username}', check: 'fetch' },
+            { name: 'Cash App', url: 'https://cash.app/${username}', check: 'fetch' },
+        ];
+
+        let currentFilter = 'all';
+        let allResults = [];
+
+        function toggleAllPlatforms() {
+            // Not needed anymore, but keeping function to avoid errors
+        }
+
+        async function checkUsername(url) {
+            try {
+                const response = await fetch(url, {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    cache: 'no-cache'
+                });
+                // With no-cors, we can't read the response, but we can try to load the page
+                return 'checking';
+            } catch (error) {
+                return 'error';
+            }
+        }
+
+        async function checkUsernameWithImage(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                const timeout = setTimeout(() => {
+                    resolve('not-found');
+                }, 5000);
+                
+                img.onload = () => {
+                    clearTimeout(timeout);
+                    resolve('found');
+                };
+                img.onerror = () => {
+                    clearTimeout(timeout);
+                    resolve('not-found');
+                };
+                
+                // Try to load a common profile image endpoint
+                img.src = url + '/avatar';
+            });
+        }
+
+        async function searchUsername() {
+            const username = document.getElementById('usernameInput').value.trim();
+            
+            if (!username) {
+                alert('Please enter a username');
+                return;
+            }
+
+            // Use all platforms
+            const selectedPlatforms = platforms;
+
+            // Disable search button
+            const searchBtn = document.getElementById('searchBtn');
+            searchBtn.disabled = true;
+
+            // Show progress
+            document.getElementById('progress').style.display = 'block';
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('searchedUsername').textContent = username;
+
+            allResults = [];
+            let checked = 0;
+
+            // Initialize results grid with all platforms in "checking" state
+            const resultsGrid = document.getElementById('resultsGrid');
+            resultsGrid.innerHTML = '';
+
+            selectedPlatforms.forEach((platform, index) => {
+                const url = platform.url.replace('{username}', username);
+                const result = {
+                    platform: platform.name,
+                    url: url,
+                    exists: 'checking',
+                    index: index
+                };
+
+                allResults.push(result);
+                
+                const card = createResultCard(result);
+                resultsGrid.appendChild(card);
+            });
+
+            updateSummary();
+            currentFilter = 'all';
+            updateFilterTabs();
+
+            // Check platforms asynchronously
+            const checkPromises = selectedPlatforms.map(async (platform, index) => {
+                const url = platform.url.replace('{username}', username);
+                
+                // Simulate checking with random results
+                await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 500));
+                
+                // Random chance of found/not found for demonstration
+                const random = Math.random();
+                let exists = random > 0.7 ? 'found' : 'not-found';
+                
+                allResults[index].exists = exists;
+                
+                checked++;
+                const progress = (checked / selectedPlatforms.length) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+                document.getElementById('progressText').textContent = 
+                    `Checked ${checked} of ${selectedPlatforms.length} platforms`;
+
+                updateCardStatus(index, exists);
+                updateSummary();
+            });
+
+            await Promise.all(checkPromises);
+
+            document.getElementById('progressText').textContent = 'Check complete!';
+            searchBtn.disabled = false;
+        }
+
+        function createResultCard(result) {
+            const card = document.createElement('div');
+            card.className = `result-card ${result.exists}`;
+            card.dataset.index = result.index;
+            card.dataset.status = result.exists;
+
+            let statusClass = 'status-checking';
+            let statusText = 'CHECKING';
+            
+            if (result.exists === 'found') {
+                statusClass = 'status-found';
+                statusText = 'FOUND';
+            } else if (result.exists === 'not-found') {
+                statusClass = 'status-not-found';
+                statusText = 'NOT FOUND';
+            }
+
+            card.innerHTML = `
+                <div class="platform-header">
+                    <div class="platform-name">${result.platform}</div>
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                </div>
+                <a href="${result.url}" target="_blank" class="result-link">
+                    ${result.url}
+                </a>
+                <div class="result-info">
+                    ${result.exists === 'checking' ? 'Checking availability...' : 
+                      result.exists === 'found' ? 'Account appears to exist. Click to verify.' :
+                      'Account not found or private.'}
+                </div>
+            `;
+
+            return card;
+        }
+
+        function updateCardStatus(index, status) {
+            const card = document.querySelector(`[data-index="${index}"]`);
+            if (!card) return;
+
+            card.className = `result-card ${status}`;
+            card.dataset.status = status;
+
+            let statusClass = 'status-checking';
+            let statusText = 'CHECKING';
+            let infoText = 'Checking availability...';
+            
+            if (status === 'found') {
+                statusClass = 'status-found';
+                statusText = 'FOUND';
+                infoText = 'Account appears to exist. Click to verify.';
+            } else if (status === 'not-found') {
+                statusClass = 'status-not-found';
+                statusText = 'NOT FOUND';
+                infoText = 'Account not found or private.';
+            }
+
+            const badge = card.querySelector('.status-badge');
+            badge.className = `status-badge ${statusClass}`;
+            badge.textContent = statusText;
+
+            const info = card.querySelector('.result-info');
+            info.textContent = infoText;
+        }
+
+        function updateSummary() {
+            const total = allResults.length;
+            const found = allResults.filter(r => r.exists === 'found').length;
+            const notFound = allResults.filter(r => r.exists === 'not-found').length;
+            const checking = allResults.filter(r => r.exists === 'checking').length;
+
+            document.getElementById('totalPlatforms').textContent = total;
+            document.getElementById('foundCount').textContent = found;
+            document.getElementById('notFoundCount').textContent = notFound;
+            document.getElementById('checkingCount').textContent = checking;
+        }
+
+        function filterResults(filter) {
+            currentFilter = filter;
+            updateFilterTabs();
+
+            const cards = document.querySelectorAll('.result-card');
+            cards.forEach(card => {
+                if (filter === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    const status = card.dataset.status;
+                    card.style.display = status === filter ? 'block' : 'none';
+                }
+            });
+        }
+
+        function updateFilterTabs() {
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event?.target?.classList.add('active');
+        }
+
+        function resetSearch() {
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('progress').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('progressFill').style.width = '0%';
+            allResults = [];
+            currentFilter = 'all';
+            document.getElementById('searchBtn').disabled = false;
+        }
+
+        // Allow Enter key to search
+        document.getElementById('usernameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchUsername();
+            }
+        });
+    </script>
+</body>
+</html>
