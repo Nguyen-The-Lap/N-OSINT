@@ -26,19 +26,22 @@
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
-            padding-top: 30px;
+            margin-bottom: 2.5rem;
+            padding-top: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .header h1 {
-            font-size: 3.5em;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 10px;
-            letter-spacing: -1px;
+            letter-spacing: -0.5px;
         }
 
         .header p {
@@ -65,12 +68,16 @@
         }
 
         .search-box {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(17, 24, 39, 0.8);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 30px;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .input-group {
@@ -274,17 +281,19 @@
         }
 
         .results-header {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(17, 24, 39, 0.8);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .results-header h2 {
-            color: #fff;
-            margin-bottom: 20px;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #e5e7eb;
             font-size: 2em;
             font-weight: 600;
         }
@@ -404,96 +413,168 @@
         }
 
         .result-card {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(17, 24, 39, 0.7);
             backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 25px;
+            border-radius: 12px;
+            padding: 1.5rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-        }
-
-        .result-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: #666;
-            transition: all 0.3s;
-        }
-
-        .result-card.found::before {
-            background: #00ff88;
-        }
-
-        .result-card.not-found::before {
-            background: #ff4757;
-        }
-
-        .result-card.checking::before {
-            background: #ffd93d;
-            animation: pulse 1.5s infinite;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         .result-card:hover {
             transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+        .result-card.found {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 3px solid #10b981;
+        }
+
+        .result-card.not-found {
+            opacity: 0.7;
+            background: rgba(239, 68, 68, 0.05);
+            border-left: 3px solid #ef4444;
+        }
+
+        .result-card.checking {
+            background: rgba(245, 158, 11, 0.05);
+            border-left: 3px solid #f59e0b;
+        }
+
+        .result-content {
+            margin: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .result-url {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            word-break: break-all;
+            font-family: 'SF Mono', 'Roboto Mono', monospace;
+        }
+
+        .visit-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .visit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+        }
+
+        .visit-btn svg {
+            width: 1rem;
+            height: 1rem;
         }
 
         .platform-header {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
-            margin-bottom: 15px;
+            margin-bottom: 1rem;
+            gap: 1rem;
         }
 
-        .platform-name {
-            font-size: 1.2em;
-            font-weight: 600;
-            color: #fff;
+        .platform-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .result-info {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-text {
+            color: #9ca3af;
+        }
+
+        .last-checked {
+            font-size: 0.7rem;
+            color: #6b7280;
+            font-feature-settings: 'tnum';
         }
 
         .platform-category {
-            font-size: 10px;
-            color: #888;
+            font-size: 0.7rem;
+            color: #6b7280;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.05em;
+            font-weight: 600;
         }
 
         .status-badge {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            white-space: nowrap;
+        }
+
+        .status-badge .spinner {
+            display: inline-block;
+            width: 0.75rem;
+            height: 0.75rem;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .status-found {
-            background: rgba(0, 255, 136, 0.2);
-            color: #00ff88;
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
         .status-not-found {
-            background: rgba(255, 71, 87, 0.2);
-            color: #ff4757;
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
         .status-checking {
-            background: rgba(255, 217, 61, 0.2);
-            color: #ffd93d;
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.2);
         }
 
         .result-link {
@@ -743,16 +824,16 @@
             <div class="category-filter" id="categoryFilter"></div>
 
             <div class="filter-tabs">
-                <div class="filter-tab active" onclick="filterResults('all')">
+                <div class="filter-tab active" data-filter="all" onclick="filterResults('all')">
                     All <span class="count" id="countAll">0</span>
                 </div>
-                <div class="filter-tab" onclick="filterResults('found')">
+                <div class="filter-tab" data-filter="found" onclick="filterResults('found')">
                     Found <span class="count found" id="countFound">0</span>
                 </div>
-                <div class="filter-tab" onclick="filterResults('not-found')">
+                <div class="filter-tab" data-filter="not-found" onclick="filterResults('not-found')">
                     Not Found <span class="count not-found" id="countNotFound">0</span>
                 </div>
-                <div class="filter-tab" onclick="filterResults('checking')">
+                <div class="filter-tab" data-filter="checking" onclick="filterResults('checking')">
                     Checking <span class="count checking" id="countChecking">0</span>
                 </div>
             </div>
@@ -818,6 +899,11 @@
             { name: 'Parler', url: 'https://parler.com/profile/{username}', category: 'Social Media', priority: 3 },
             { name: 'Gab', url: 'https://gab.com/{username}', category: 'Social Media', priority: 3 },
             { name: 'Gettr', url: 'https://gettr.com/user/{username}', category: 'Social Media', priority: 3 },
+            { name: 'Vero', url: 'https://vero.co/{username}', category: 'Social Media', priority: 3 },
+            { name: 'Mewe', url: 'https://mewe.com/@{username}', category: 'Social Media', priority: 3 },
+            { name: 'Mastodon (General)', url: 'https://mastodon.online/@{username}', category: 'Social Media', priority: 3 },
+            { name: 'Diaspora', url: 'https://diasp.org/people/{username}', category: 'Social Media', priority: 3 },
+            { name: 'Ello', url: 'https://ello.co/{username}', category: 'Social Media', priority: 3 },
             
             // === TECH & DEVELOPER (250+) ===
             { name: 'GitHub', url: 'https://github.com/{username}', category: 'Tech & Developer', priority: 1 },
@@ -840,6 +926,14 @@
             { name: 'RubyGems', url: 'https://rubygems.org/profiles/{username}', category: 'Tech & Developer', priority: 3 },
             { name: 'Packagist', url: 'https://packagist.org/users/{username}', category: 'Tech & Developer', priority: 3 },
             { name: 'NuGet', url: 'https://nuget.org/profiles/{username}', category: 'Tech & Developer', priority: 3 },
+            { name: 'GitHub Gist', url: 'https://gist.github.com/{username}', category: 'Tech & Developer', priority: 2 },
+            { name: 'GitHub Pages', url: 'https://{username}.github.io', category: 'Tech & Developer', priority: 2 },
+            { name: 'GitHub Sponsors', url: 'https://github.com/sponsors/{username}', category: 'Tech & Developer', priority: 3 },
+            { name: 'GitHub Gists', url: 'https://gist.github.com/{username}', category: 'Tech & Developer', priority: 3 },
+            { name: 'GitHub Stars', url: 'https://github.com/stars/{username}', category: 'Tech & Developer', priority: 3 },
+            
+
+
             
             // === GAMING (200+) ===
             { name: 'Twitch', url: 'https://twitch.tv/{username}', category: 'Gaming', priority: 1 },
@@ -862,6 +956,14 @@
             { name: 'Overwatch', url: 'https://overwatch.blizzard.com/career/{username}', category: 'Gaming', priority: 3 },
             { name: 'Apex Legends', url: 'https://apex.tracker.gg/apex/profile/pc/{username}', category: 'Gaming', priority: 3 },
             { name: 'PUBG', url: 'https://pubg.op.gg/user/{username}', category: 'Gaming', priority: 3 },
+            { name: 'Call of Duty', url: 'https://cod.tracker.gg/profile/all/{username}', category: 'Gaming', priority: 3 },
+            { name: 'World of Warcraft', url: 'https://worldofwarcraft.com/en-us/character/{username}', category: 'Gaming', priority: 3 },
+            { name: 'Steam Workshop', url: 'https://steamcommunity.com/workshop/filedetails/?id={username}', category: 'Gaming', priority: 3 },
+            { name: 'Steam Groups', url: 'https://steamcommunity.com/groups/{username}', category: 'Gaming', priority: 3 },
+            { name: 'Steam Market', url: 'https://steamcommunity.com/market/search?q={username}', category: 'Gaming', priority: 3 },
+            { name: 'Steam Inventory', url: 'https://steamcommunity.com/inventory/{username}', category: 'Gaming', priority: 3 },
+            
+
             
             // === CREATIVE & DESIGN (150+) ===
             { name: 'Dribbble', url: 'https://dribbble.com/{username}', category: 'Creative & Design', priority: 1 },
@@ -874,6 +976,12 @@
             { name: 'Carbonmade', url: 'https://{username}.carbonmade.com', category: 'Creative & Design', priority: 3 },
             { name: 'Coroflot', url: 'https://coroflot.com/{username}', category: 'Creative & Design', priority: 3 },
             { name: 'Cargo', url: 'https://cargo.site/{username}', category: 'Creative & Design', priority: 3 },
+            { name: 'Dribbble Shots', url: 'https://dribbble.com/{username}/shots', category: 'Creative & Design', priority: 3 },
+            { name: 'Dribbble Likes', url: 'https://dribbble.com/{username}/likes', category: 'Creative & Design', priority: 3 },
+            { name: 'Dribbble Following', url: 'https://dribbble.com/{username}/following', category: 'Creative & Design', priority: 3 },
+            { name: 'Behance Projects', url: 'https://behance.net/{username}/projects', category: 'Creative & Design', priority: 3 },
+            { name: 'Behance Appreciated', url: 'https://behance.net/{username}/appreciated', category: 'Creative & Design', priority: 3 },
+            
             
             // === MUSIC & AUDIO (100+) ===
             { name: 'SoundCloud', url: 'https://soundcloud.com/{username}', category: 'Music & Audio', priority: 1 },
@@ -926,6 +1034,10 @@
             { name: 'Carrd', url: 'https://{username}.carrd.co', category: 'Professional & Business', priority: 3 },
             { name: 'Xing', url: 'https://xing.com/profile/{username}', category: 'Professional & Business', priority: 3 },
             { name: 'Meetup', url: 'https://meetup.com/members/{username}', category: 'Professional & Business', priority: 3 },
+            { name: 'LinkedIn Company', url: 'https://linkedin.com/company/{username}', category: 'Business & Professional', priority: 2 },
+            { name: 'LinkedIn Learning', url: 'https://linkedin.com/learning/me?u={username}', category: 'Business & Professional', priority: 3 },
+            { name: 'LinkedIn Groups', url: 'https://linkedin.com/groups/{username}', category: 'Business & Professional', priority: 3 },
+            { name: 'LinkedIn Jobs', url: 'https://linkedin.com/jobs/view/{username}', category: 'Business & Professional', priority: 3 },
             
             // === FORUMS & COMMUNITIES (100+) ===
             { name: 'Quora', url: 'https://quora.com/profile/{username}', category: 'Forums & Communities', priority: 2 },
@@ -948,6 +1060,11 @@
             { name: 'Duolingo', url: 'https://duolingo.com/profile/{username}', category: 'Education & Learning', priority: 2 },
             { name: 'Codecademy', url: 'https://codecademy.com/profiles/{username}', category: 'Education & Learning', priority: 3 },
             { name: 'FreeCodeCamp', url: 'https://freecodecamp.org/{username}', category: 'Education & Learning', priority: 2 },
+            { name: 'Coursera', url: 'https://coursera.org/user/{username}', category: 'Education', priority: 2 },
+            { name: 'edX', url: 'https://edx.org/profiles/{username}', category: 'Education', priority: 2 },
+            { name: 'Udemy', url: 'https://udemy.com/user/{username}', category: 'Education', priority: 2 },
+            { name: 'Khan Academy', url: 'https://khanacademy.org/profile/{username}', category: 'Education', priority: 2 },
+            { name: 'Duolingo', url: 'https://duolingo.com/profile/{username}', category: 'Education', priority: 2 },
             
             // === CRYPTO & BLOCKCHAIN (70+) ===
             { name: 'OpenSea', url: 'https://opensea.io/{username}', category: 'Crypto & Blockchain', priority: 2 },
@@ -956,6 +1073,8 @@
             { name: 'SuperRare', url: 'https://superrare.com/@{username}', category: 'Crypto & Blockchain', priority: 3 },
             { name: 'CoinMarketCap', url: 'https://coinmarketcap.com/community/profile/{username}', category: 'Crypto & Blockchain', priority: 3 },
             { name: 'CoinGecko', url: 'https://coingecko.com/en/users/{username}', category: 'Crypto & Blockchain', priority: 3 },
+            { name: 'Coinbase', url: 'https://coinbase.com/{username}', category: 'Finance & Crypto', priority: 2 },
+            { name: 'Binance', url: 'https://binance.com/en/profile/{username}', category: 'Finance & Crypto', priority: 2 },
             
             // === FITNESS & HEALTH (50+) ===
             { name: 'Strava', url: 'https://strava.com/athletes/{username}', category: 'Fitness & Health', priority: 2 },
@@ -977,6 +1096,10 @@
             { name: 'OnlyFans', url: 'https://onlyfans.com/{username}', category: 'Content & Monetization', priority: 3 },
             { name: 'Fansly', url: 'https://fansly.com/{username}', category: 'Content & Monetization', priority: 3 },
             { name: 'Gumroad', url: 'https://gumroad.com/{username}', category: 'Content & Monetization', priority: 3 },
+            { name: 'YouTube Channel', url: 'https://youtube.com/c/{username}', category: 'Media & Content', priority: 1 },
+            { name: 'YouTube User', url: 'https://youtube.com/user/{username}', category: 'Media & Content', priority: 1 },
+            { name: 'YouTube Playlist', url: 'https://youtube.com/playlist?list={username}', category: 'Media & Content', priority: 3 },
+            { name: 'YouTube Live', url: 'https://youtube.com/live/{username}', category: 'Media & Content', priority: 3 },
             
             // === MISC & OTHER (80+) ===
             { name: 'Goodreads', url: 'https://goodreads.com/{username}', category: 'Misc & Other', priority: 2 },
@@ -1116,26 +1239,46 @@
             
             if (result.exists === 'found') {
                 statusClass = 'status-found';
-                statusText = '✓ FOUND';
-                infoText = 'Account appears to exist. Click to verify.';
+                statusText = 'FOUND';
+                infoText = 'Account appears to exist';
             } else if (result.exists === 'not-found') {
                 statusClass = 'status-not-found';
-                statusText = '✗ NOT FOUND';
-                infoText = 'Account not found or private.';
+                statusText = 'NOT FOUND';
+                infoText = 'Account not found or private';
             }
+
+            const isFound = result.exists === 'found';
+            const visitButton = isFound ? `
+                <a href="${result.url}" target="_blank" class="visit-btn" rel="noopener noreferrer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    Visit Site
+                </a>` : '';
 
             card.innerHTML = `
                 <div class="platform-header">
-                    <div>
+                    <div class="platform-info">
                         <div class="platform-name">${result.platform}</div>
                         <div class="platform-category">${result.category}</div>
                     </div>
-                    <span class="status-badge ${statusClass}">${statusText}</span>
+                    <span class="status-badge ${statusClass}">
+                        ${result.exists === 'checking' ? 
+                            '<span class="spinner"></span>' : 
+                            (result.exists === 'found' ? '&#10003;' : '&#10005;')}
+                        ${statusText}
+                    </span>
                 </div>
-                <a href="${result.url}" target="_blank" class="result-link" ${result.exists === 'found' ? '' : 'style="pointer-events: none; opacity: 0.5;"'}>
-                    ${result.url}
-                </a>
-                <div class="result-info">${infoText}</div>
+                <div class="result-content">
+                    <div class="result-url">${result.url}</div>
+                    ${visitButton}
+                </div>
+                <div class="result-info">
+                    <span class="info-text">${infoText}</span>
+                    <span class="last-checked">Just now</span>
+                </div>
             `;
 
             return card;
@@ -1173,13 +1316,31 @@
         }
 
         function updateFilterTabs() {
-            const tabs = document.querySelectorAll('.filter-tab');
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-                if (tab.getAttribute('data-filter') === currentFilter) {
-                    tab.classList.add('active');
+            try {
+                const tabs = document.querySelectorAll('.filter-tab');
+                if (!tabs || tabs.length === 0) {
+                    console.warn('No filter tabs found');
+                    return;
                 }
-            });
+                
+                tabs.forEach(tab => {
+                    if (tab && tab.classList) {
+                        tab.classList.remove('active');
+                        const filterValue = tab.getAttribute('data-filter');
+                        if (filterValue === currentFilter) {
+                            tab.classList.add('active');
+                        }
+                    }
+                });
+                
+                // Update the current tab's active state
+                const currentTab = document.querySelector(`.filter-tab[data-filter="${currentFilter}"]`);
+                if (currentTab && currentTab.classList) {
+                    currentTab.classList.add('active');
+                }
+            } catch (error) {
+                console.error('Error in updateFilterTabs:', error);
+            }
         }
 
         function updateSummary() {
